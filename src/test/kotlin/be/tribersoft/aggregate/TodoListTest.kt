@@ -5,6 +5,7 @@ import org.axonframework.test.FixtureConfiguration
 import org.axonframework.test.Fixtures
 import org.junit.Before
 import org.junit.Test
+import java.util.*
 
 class TodoListTest {
 
@@ -17,61 +18,75 @@ class TodoListTest {
 
     @Test
     fun todoListCreate() {
+        val uuid = UUID.randomUUID()
         fixture!!.givenNoPriorActivity().
-            `when`(CreateTodoListCommand("uuid", "name")).
-            expectEvents(TodoListCreatedEvent("uuid", "name"))
+                `when`(CreateTodoListCommand(uuid, "name")).
+                expectEvents(TodoListCreatedEvent(uuid, "name"))
 
     }
 
     @Test
     fun todoListUpdateName() {
-        fixture!!.given(TodoListCreatedEvent("uuid", "name")).
-                `when`(UpdateTodoListNameCommand("uuid", "new name")).
-                expectEvents(TodoListNameUpdatedEvent("uuid", "new name"))
+        val uuid = UUID.randomUUID()
+        fixture!!.given(TodoListCreatedEvent(uuid, "name")).
+                `when`(UpdateTodoListNameCommand(uuid, "new name")).
+                expectEvents(TodoListNameUpdatedEvent(uuid, "new name"))
 
     }
 
     @Test
     fun todoItemCreate() {
-        fixture!!.given(TodoListCreatedEvent("todo list uuid", "name")).
-                `when`(CreateTodoItemCommand("todo list uuid", "uuid", "description")).
-                expectEvents(TodoItemCreatedEvent("todo list uuid", "uuid", "description"))
+        val todoListUuid = UUID.randomUUID()
+        val uuid = UUID.randomUUID()
+        fixture!!.given(TodoListCreatedEvent(todoListUuid, "name")).
+                `when`(CreateTodoItemCommand(todoListUuid, uuid, "description")).
+                expectEvents(TodoItemCreatedEvent(todoListUuid, uuid, "description"))
     }
 
     @Test
     fun todoItemUpdateDescription() {
-        fixture!!.given(TodoListCreatedEvent("todo list uuid", "name"), TodoItemCreatedEvent("todo list uuid", "uuid", "description")).
-                `when`(UpdateTodoItemDescriptionCommand("todo list uuid", "uuid", "new description")).
-                expectEvents(TodoItemDescriptionUpdatedEvent("todo list uuid", "uuid", "new description"))
+        val todoListUuid = UUID.randomUUID()
+        val uuid = UUID.randomUUID()
+        fixture!!.given(TodoListCreatedEvent(todoListUuid, "name"), TodoItemCreatedEvent(todoListUuid, uuid, "description")).
+                `when`(UpdateTodoItemDescriptionCommand(todoListUuid, uuid, "new description")).
+                expectEvents(TodoItemDescriptionUpdatedEvent(todoListUuid, uuid, "new description"))
 
     }
 
     @Test
     fun todoItemFinish_startedTodoItem() {
-        fixture!!.given(TodoListCreatedEvent("todo list uuid", "name"), TodoItemCreatedEvent("todo list uuid", "uuid", "description")).
-                `when`(FinishTodoItemCommand("todo list uuid", "uuid")).
-                expectEvents(TodoItemFinishedEvent("todo list uuid", "uuid"))
+        val todoListUuid = UUID.randomUUID()
+        val uuid = UUID.randomUUID()
+        fixture!!.given(TodoListCreatedEvent(todoListUuid, "name"), TodoItemCreatedEvent(todoListUuid, uuid, "description")).
+                `when`(FinishTodoItemCommand(todoListUuid, uuid)).
+                expectEvents(TodoItemFinishedEvent(todoListUuid, uuid))
     }
 
     @Test
     fun todoItemFinish_finishedTodoItem() {
-        fixture!!.given(TodoListCreatedEvent("todo list uuid", "name"), TodoItemCreatedEvent("todo list uuid", "uuid", "description"), TodoItemFinishedEvent("todo list uuid", "uuid")).
-                `when`(FinishTodoItemCommand("todo list uuid", "uuid")).
+        val todoListUuid = UUID.randomUUID()
+        val uuid = UUID.randomUUID()
+        fixture!!.given(TodoListCreatedEvent(todoListUuid, "name"), TodoItemCreatedEvent(todoListUuid, uuid, "description"), TodoItemFinishedEvent(todoListUuid, uuid)).
+                `when`(FinishTodoItemCommand(todoListUuid, uuid)).
                 expectNoEvents().
                 expectException(TodoItemAlreadyFinishedException::class.java)
     }
 
     @Test
     fun todoItemStart_finishedTodoItem() {
-        fixture!!.given(TodoListCreatedEvent("todo list uuid", "name"), TodoItemCreatedEvent("todo list uuid", "uuid", "description"), TodoItemFinishedEvent("todo list uuid", "uuid")).
-                `when`(StartTodoItemCommand("todo list uuid", "uuid")).
-                expectEvents(TodoItemStartedEvent("todo list uuid", "uuid"))
+        val todoListUuid = UUID.randomUUID()
+        val uuid = UUID.randomUUID()
+        fixture!!.given(TodoListCreatedEvent(todoListUuid, "name"), TodoItemCreatedEvent(todoListUuid, uuid, "description"), TodoItemFinishedEvent(todoListUuid, uuid)).
+                `when`(StartTodoItemCommand(todoListUuid, uuid)).
+                expectEvents(TodoItemStartedEvent(todoListUuid, uuid))
     }
 
     @Test
     fun todoItemStart_startedTodoItem() {
-        fixture!!.given(TodoListCreatedEvent("todo list uuid", "name"), TodoItemCreatedEvent("todo list uuid", "uuid", "description")).
-                `when`(StartTodoItemCommand("todo list uuid", "uuid")).
+        val todoListUuid = UUID.randomUUID()
+        val uuid = UUID.randomUUID()
+        fixture!!.given(TodoListCreatedEvent(todoListUuid, "name"), TodoItemCreatedEvent(todoListUuid, uuid, "description")).
+                `when`(StartTodoItemCommand(todoListUuid, uuid)).
                 expectNoEvents().
                 expectException(TodoItemAlreadyStartedException::class.java)
     }

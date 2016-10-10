@@ -1,11 +1,9 @@
 package be.tribersoft.aggregate
 
 import be.tribersoft.api.*
-import lombok.NoArgsConstructor
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.commandhandling.model.AggregateIdentifier
 import org.axonframework.commandhandling.model.AggregateLifecycle
-import org.axonframework.commandhandling.model.AggregateMember
 import org.axonframework.commandhandling.model.AggregateRoot
 import org.axonframework.eventhandling.EventHandler
 import org.axonframework.spring.stereotype.Aggregate
@@ -16,9 +14,9 @@ import java.util.*
 class TodoList {
 
     @AggregateIdentifier
-    var uuid:String? = null
+    var uuid: UUID? = null
 
-    var todoItems:MutableMap<String, TodoItem> = HashMap<String, TodoItem>()
+    var todoItems: MutableMap<UUID, TodoItem> = HashMap<UUID, TodoItem>()
 
     constructor()
 
@@ -81,4 +79,4 @@ class TodoList {
 
 }
 
-data class TodoItem( val uuid: String,  var state: TodoItemState)
+data class TodoItem(val uuid: UUID, var state: TodoItemState)
