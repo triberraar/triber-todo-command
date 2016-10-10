@@ -8,8 +8,10 @@ import org.axonframework.commandhandling.model.AggregateLifecycle
 import org.axonframework.commandhandling.model.AggregateMember
 import org.axonframework.commandhandling.model.AggregateRoot
 import org.axonframework.eventhandling.EventHandler
+import org.axonframework.spring.stereotype.Aggregate
 import java.util.*
 
+@Aggregate
 @AggregateRoot
 class TodoList {
 
