@@ -42,18 +42,19 @@ class TodoList {
 
     @EventHandler
     fun on(event: TodoItemCreatedEvent) {
-       todoItems.put(event.uuid, TodoItem(event.uuid, TodoItemState.STARTED))
+        todoItems.put(event.uuid, TodoItem(event.uuid, TodoItemStatus.STARTED))
     }
 
     @CommandHandler
     fun updateTodoItemDescription(command: UpdateTodoItemDescriptionCommand) {
+        checkTodoItemExist(command.uuid)
         AggregateLifecycle.apply(TodoItemDescriptionUpdatedEvent(command.todoListUuid, command.uuid, command.description))
     }
 
     @CommandHandler
     fun finishTodoItem(command: FinishTodoItemCommand) {
-        val todoItem = todoItems.get(command.uuid)
-        if(todoItem!!.state.equals(TodoItemState.STARTED)) {
+        val todoItem = getTodoItem(command.uuid)
+        if (todoItem.status.equals(TodoItemStatus.STARTED)) {
             AggregateLifecycle.apply(TodoItemFinishedEvent(command.todoListUuid, command.uuid))
         } else {
             throw TodoItemAlreadyFinishedException()
@@ -62,14 +63,14 @@ class TodoList {
 
     @EventHandler
     fun on(event: TodoItemFinishedEvent) {
-        val todoItem = todoItems.get(event.uuid)
-        todoItem!!.state = TodoItemState.FINISHED
+        val todoItem = getTodoItem(event.uuid)
+        todoItem.status = TodoItemStatus.FINISHED
     }
 
     @CommandHandler
     fun startTodoItem(command: StartTodoItemCommand) {
-        val todoItem = todoItems.get(command.uuid)
-        if(todoItem!!.state.equals(TodoItemState.FINISHED)) {
+        val todoItem = getTodoItem(command.uuid)
+        if (todoItem.status.equals(TodoItemStatus.FINISHED)) {
             AggregateLifecycle.apply(TodoItemStartedEvent(command.todoListUuid, command.uuid))
         } else {
             throw TodoItemAlreadyStartedException()
@@ -77,6 +78,22 @@ class TodoList {
 
     }
 
+    @EventHandler
+    fun on(event: TodoItemStartedEvent) {
+        val todoItem = getTodoItem(event.uuid)
+        todoItem.status = TodoItemStatus.STARTED
+    }
+
+    private fun getTodoItem(uuid: UUID): TodoItem {
+        checkTodoItemExist(uuid)
+        return todoItems.get(uuid)!!
+    }
+
+    private fun checkTodoItemExist(uuid: UUID) {
+        val todoItem = todoItems.get(uuid)
+        todoItem ?: throw TodoItemNotFoundException()
+    }
+
 }
 
-data class TodoItem(val uuid: UUID, var state: TodoItemState)
+data class TodoItem(val uuid: UUID, var status: TodoItemStatus)

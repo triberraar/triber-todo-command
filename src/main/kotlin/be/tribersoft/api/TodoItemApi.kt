@@ -13,9 +13,10 @@ data class TodoItemDescriptionUpdatedEvent(val todoListUuid: UUID, val uuid: UUI
 data class TodoItemFinishedEvent(val todoListUuid: UUID, val uuid: UUID)
 data class TodoItemStartedEvent(val todoListUuid: UUID, val uuid: UUID)
 
-enum class TodoItemState {
+enum class TodoItemStatus {
     STARTED, FINISHED
 }
 
 class TodoItemAlreadyFinishedException : RuntimeException()
 class TodoItemAlreadyStartedException : RuntimeException()
+class TodoItemNotFoundException : RuntimeException()
