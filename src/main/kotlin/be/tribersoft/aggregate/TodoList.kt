@@ -7,11 +7,15 @@ import org.axonframework.commandhandling.model.AggregateLifecycle
 import org.axonframework.commandhandling.model.AggregateRoot
 import org.axonframework.eventhandling.EventHandler
 import org.axonframework.spring.stereotype.Aggregate
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.util.*
 
 @Aggregate
 @AggregateRoot
 class TodoList {
+
+    val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
     @AggregateIdentifier
     var uuid: UUID? = null
@@ -22,6 +26,7 @@ class TodoList {
 
     @CommandHandler
     constructor(command: CreateTodoListCommand ) {
+        logger.info("Creating todolist: " + command)
         AggregateLifecycle.apply(TodoListCreatedEvent(command.uuid, command.name))
     }
 

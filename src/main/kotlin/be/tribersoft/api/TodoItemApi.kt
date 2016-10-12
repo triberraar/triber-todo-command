@@ -8,7 +8,7 @@ data class UpdateTodoItemDescriptionCommand(@TargetAggregateIdentifier val todoL
 data class FinishTodoItemCommand(@TargetAggregateIdentifier val todoListUuid: UUID, val uuid: UUID)
 data class StartTodoItemCommand(@TargetAggregateIdentifier val todoListUuid: UUID, val uuid: UUID)
 
-data class TodoItemCreatedEvent(val todoListUuid: UUID, val uuid: UUID, val description: String)
+data class TodoItemCreatedEvent(val todoListUuid: UUID, val uuid: UUID, val description: String, val status: TodoItemStatus = TodoItemStatus.STARTED)
 data class TodoItemDescriptionUpdatedEvent(val todoListUuid: UUID, val uuid: UUID, val description: String)
 data class TodoItemFinishedEvent(val todoListUuid: UUID, val uuid: UUID)
 data class TodoItemStartedEvent(val todoListUuid: UUID, val uuid: UUID)

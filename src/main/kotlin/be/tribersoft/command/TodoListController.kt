@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture
 import javax.inject.Inject
 import javax.ws.rs.core.MediaType
 
-@RestController
+@RestController("commandTodoListController")
 @RequestMapping(path = arrayOf("/todo-list"))
 class TodoListController
 @Inject
