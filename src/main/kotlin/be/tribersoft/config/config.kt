@@ -7,12 +7,9 @@ import org.axonframework.eventsourcing.eventstore.EventStorageEngine
 import org.axonframework.eventsourcing.eventstore.inmemory.InMemoryEventStorageEngine
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import javax.inject.Inject
 
 @Configuration
-open class AxonConfig
-@Inject
-constructor(private val commandBus: CommandBus) {
+open class AxonConfig(private val commandBus: CommandBus) {
 
     @Bean
     open fun eventStorageEngine(): EventStorageEngine {

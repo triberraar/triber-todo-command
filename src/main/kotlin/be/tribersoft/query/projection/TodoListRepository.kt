@@ -1,4 +1,4 @@
-package be.tribersoft.query
+package be.tribersoft.query.projection
 
 import org.springframework.data.repository.CrudRepository
 

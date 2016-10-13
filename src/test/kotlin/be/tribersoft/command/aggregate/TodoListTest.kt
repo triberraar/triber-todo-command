@@ -1,6 +1,7 @@
-package be.tribersoft.aggregate
+package be.tribersoft.command.aggregate
 
 import be.tribersoft.api.*
+import be.tribersoft.command.commands.*
 import org.axonframework.test.FixtureConfiguration
 import org.axonframework.test.Fixtures
 import org.junit.Before

@@ -1,6 +1,7 @@
-package be.tribersoft.aggregate
+package be.tribersoft.command.aggregate
 
 import be.tribersoft.api.*
+import be.tribersoft.command.commands.*
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.commandhandling.model.AggregateIdentifier
 import org.axonframework.commandhandling.model.AggregateLifecycle
@@ -25,7 +26,7 @@ class TodoList {
     constructor()
 
     @CommandHandler
-    constructor(command: CreateTodoListCommand ) {
+    constructor(command: CreateTodoListCommand) {
         logger.info("Creating todolist: " + command)
         AggregateLifecycle.apply(TodoListCreatedEvent(command.uuid, command.name))
     }

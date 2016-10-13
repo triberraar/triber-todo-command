@@ -1,4 +1,4 @@
-package be.tribersoft.command
+package be.tribersoft.command.rest
 
 import java.util.*
 

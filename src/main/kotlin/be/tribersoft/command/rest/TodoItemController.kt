@@ -1,22 +1,19 @@
-package be.tribersoft.command
+package be.tribersoft.command.rest
 
-import be.tribersoft.api.CreateTodoItemCommand
-import be.tribersoft.api.FinishTodoItemCommand
-import be.tribersoft.api.StartTodoItemCommand
-import be.tribersoft.api.UpdateTodoItemDescriptionCommand
+import be.tribersoft.command.commands.CreateTodoItemCommand
+import be.tribersoft.command.commands.FinishTodoItemCommand
+import be.tribersoft.command.commands.StartTodoItemCommand
+import be.tribersoft.command.commands.UpdateTodoItemDescriptionCommand
 import org.axonframework.commandhandling.GenericCommandMessage
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.springframework.web.bind.annotation.*
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import javax.inject.Inject
 import javax.ws.rs.core.MediaType
 
 @RestController
 @RequestMapping(path = arrayOf("/todo-list/{todoListUuid}/todo-item"))
-class TodoItemController
-@Inject
-constructor(private val commandGateway: CommandGateway) {
+class TodoItemController(private val commandGateway: CommandGateway) {
 
     @PostMapping(consumes = arrayOf(MediaType.APPLICATION_JSON), produces = arrayOf(MediaType.APPLICATION_JSON))
     fun create(@PathVariable todoListUuid: UUID, @RequestBody body: CreateTodoItemJson): CompletableFuture<TodoItemJson> {
