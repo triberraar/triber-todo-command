@@ -1,6 +1,6 @@
 package be.tribersoft.query.projection
 
-import be.tribersoft.api.TodoListCreatedEventJava
+import be.tribersoft.api.TodoListCreatedEvent
 import org.axonframework.eventhandling.EventHandler
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -13,7 +13,7 @@ class TodoListService @Inject constructor(private val todoListRepository: TodoLi
     val logger: Logger = LoggerFactory.getLogger(TodoListService::class.java)
 
     @EventHandler
-    fun on(event: TodoListCreatedEventJava) {
+    fun on(event: TodoListCreatedEvent) {
         logger.info("Projection Creating todolist")
         todoListRepository.save(TodoList(event.uuid.toString(), event.name))
     }
