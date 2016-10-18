@@ -1,19 +1,22 @@
 package be.tribersoft.command.aggregate
 
-import be.tribersoft.api.*
-import be.tribersoft.command.commands.*
+import be.tribersoft.api.TodoItemStatus
+import be.tribersoft.api.TodoListCreatedEvent
+import be.tribersoft.api.TodoListNameUpdatedEvent
+import be.tribersoft.command.commands.CreateTodoListCommand
+import be.tribersoft.command.commands.UpdateTodoListNameCommand
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.commandhandling.model.AggregateIdentifier
 import org.axonframework.commandhandling.model.AggregateLifecycle
 import org.axonframework.commandhandling.model.AggregateRoot
-import org.axonframework.eventhandling.EventHandler
+import org.axonframework.eventsourcing.EventSourcingHandler
 import org.axonframework.spring.stereotype.Aggregate
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
 
-@Aggregate
 @AggregateRoot
+@Aggregate
 class TodoList {
 
     val logger: Logger = LoggerFactory.getLogger(this.javaClass)
@@ -21,83 +24,29 @@ class TodoList {
     @AggregateIdentifier
     var uuid: UUID? = null
 
-    var todoItems: MutableMap<UUID, TodoItem> = HashMap<UUID, TodoItem>()
-
     constructor()
 
     @CommandHandler
     constructor(command: CreateTodoListCommand) {
-        logger.info("Creating todolist: " + command)
+        logger.info("Incoming command: Creating todolist: " + command.uuid)
         AggregateLifecycle.apply(TodoListCreatedEvent(command.uuid, command.name))
     }
 
-    @EventHandler
+    @EventSourcingHandler
     fun on(event: TodoListCreatedEvent) {
+        logger.info("Incoming event: Create todolist: " + event.uuid)
         uuid = event.uuid
     }
 
     @CommandHandler
     fun updateName(command: UpdateTodoListNameCommand) {
+        logger.info("Incoming command: Updating todolist: " + command.uuid)
         AggregateLifecycle.apply(TodoListNameUpdatedEvent(command.uuid, command.name))
     }
 
-    @CommandHandler
-    fun createTodoItem(command: CreateTodoItemCommand) {
-        AggregateLifecycle.apply(TodoItemCreatedEvent(command.todoListUuid, command.uuid, command.description))
-    }
-
-    @EventHandler
-    fun on(event: TodoItemCreatedEvent) {
-        todoItems.put(event.uuid, TodoItem(event.uuid, TodoItemStatus.STARTED))
-    }
-
-    @CommandHandler
-    fun updateTodoItemDescription(command: UpdateTodoItemDescriptionCommand) {
-        checkTodoItemExist(command.uuid)
-        AggregateLifecycle.apply(TodoItemDescriptionUpdatedEvent(command.todoListUuid, command.uuid, command.description))
-    }
-
-    @CommandHandler
-    fun finishTodoItem(command: FinishTodoItemCommand) {
-        val todoItem = getTodoItem(command.uuid)
-        if (todoItem.status.equals(TodoItemStatus.STARTED)) {
-            AggregateLifecycle.apply(TodoItemFinishedEvent(command.todoListUuid, command.uuid))
-        } else {
-            throw TodoItemAlreadyFinishedException()
-        }
-    }
-
-    @EventHandler
-    fun on(event: TodoItemFinishedEvent) {
-        val todoItem = getTodoItem(event.uuid)
-        todoItem.status = TodoItemStatus.FINISHED
-    }
-
-    @CommandHandler
-    fun startTodoItem(command: StartTodoItemCommand) {
-        val todoItem = getTodoItem(command.uuid)
-        if (todoItem.status.equals(TodoItemStatus.FINISHED)) {
-            AggregateLifecycle.apply(TodoItemStartedEvent(command.todoListUuid, command.uuid))
-        } else {
-            throw TodoItemAlreadyStartedException()
-        }
-
-    }
-
-    @EventHandler
-    fun on(event: TodoItemStartedEvent) {
-        val todoItem = getTodoItem(event.uuid)
-        todoItem.status = TodoItemStatus.STARTED
-    }
-
-    private fun getTodoItem(uuid: UUID): TodoItem {
-        checkTodoItemExist(uuid)
-        return todoItems.get(uuid)!!
-    }
-
-    private fun checkTodoItemExist(uuid: UUID) {
-        val todoItem = todoItems.get(uuid)
-        todoItem ?: throw TodoItemNotFoundException()
+    @EventSourcingHandler
+    fun on(event: TodoListNameUpdatedEvent) {
+        logger.info("Incocming event: Updating todolist: " + event.uuid)
     }
 
 }
