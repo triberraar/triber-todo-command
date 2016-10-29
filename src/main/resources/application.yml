@@ -1,0 +1,22 @@
+spring:
+  profiles:
+    active:
+      dev
+
+---
+
+spring:
+  profiles: dev
+
+---
+
+spring:
+  profiles: prod
+  data:
+    elasticsearch:
+    cluster-nodes: localhost:9300
+    cluster-name: elasticsearch_geertolaerts
+axon:
+  mongodb:
+    host: 127.0.0.1
+    port: 27017
