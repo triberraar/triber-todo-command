@@ -2,10 +2,12 @@ package be.tribersoft.command.aggregate
 
 import be.tribersoft.api.*
 import be.tribersoft.command.commands.*
+import be.tribersoft.util.DateFixator
 import org.axonframework.test.FixtureConfiguration
 import org.axonframework.test.Fixtures
 import org.junit.Before
 import org.junit.Test
+import java.time.LocalDateTime
 import java.util.*
 
 class TodoListTest {
@@ -15,6 +17,7 @@ class TodoListTest {
     @Before
     fun setUp() {
         fixture = Fixtures.newGivenWhenThenFixture(TodoList::class.java)
+        DateFixator.fixate(LocalDateTime.now())
     }
 
     @Test

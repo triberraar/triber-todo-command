@@ -1,10 +1,7 @@
 package be.tribersoft.command.aggregate
 
-import be.tribersoft.api.TodoItemStatus
-import be.tribersoft.api.TodoListCreatedEvent
-import be.tribersoft.api.TodoListNameUpdatedEvent
-import be.tribersoft.command.commands.CreateTodoListCommand
-import be.tribersoft.command.commands.UpdateTodoListNameCommand
+import be.tribersoft.api.*
+import be.tribersoft.command.commands.*
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.commandhandling.model.AggregateIdentifier
 import org.axonframework.commandhandling.model.AggregateLifecycle
@@ -24,29 +21,90 @@ class TodoList {
     @AggregateIdentifier
     var uuid: UUID? = null
 
+    var todoItems: MutableMap<UUID, TodoItem> = mutableMapOf()
+
     constructor()
 
     @CommandHandler
     constructor(command: CreateTodoListCommand) {
-        logger.info("Incoming command: Creating todolist: " + command.uuid)
+        logger.info("TodoList (${command.uuid}) Incoming command: Create todoList")
         AggregateLifecycle.apply(TodoListCreatedEvent(command.uuid, command.name))
     }
 
     @EventSourcingHandler
     fun on(event: TodoListCreatedEvent) {
-        logger.info("Incoming event: Create todolist: " + event.uuid)
+        logger.info("TodoList (${event.uuid}) Incoming event: TodoList created")
         uuid = event.uuid
     }
 
     @CommandHandler
     fun updateName(command: UpdateTodoListNameCommand) {
-        logger.info("Incoming command: Updating todolist: " + command.uuid)
+        logger.info("TodoList (${command.uuid}) Incoming command: Update todoList")
         AggregateLifecycle.apply(TodoListNameUpdatedEvent(command.uuid, command.name))
     }
 
     @EventSourcingHandler
     fun on(event: TodoListNameUpdatedEvent) {
-        logger.info("Incocming event: Updating todolist: " + event.uuid)
+        logger.info("TodoList (${event.uuid}) Incoming event: TodoList updated")
+    }
+
+    @CommandHandler
+    fun on(command: CreateTodoItemCommand) {
+        logger.info("TodoList (${command.todoListUuid}): TodoItem (${command.uuid}) Incoming command: Create todoItem")
+        AggregateLifecycle.apply(TodoItemCreatedEvent(command.todoListUuid, command.uuid, command.description))
+    }
+
+    @EventSourcingHandler
+    fun on(event: TodoItemCreatedEvent) {
+        logger.info("TodoList (${event.todoListUuid}): TodoItem (${event.uuid}) Incoming event: TodoItem created")
+        todoItems.put(event.uuid, TodoItem(event.uuid, event.status))
+    }
+
+    @CommandHandler
+    fun on(command: UpdateTodoItemDescriptionCommand) {
+        logger.info("TodoList (${command.todoListUuid}): TodoItem (${command.uuid}) Incoming command: Update todoItem")
+        getTodoItem(command.uuid)
+        AggregateLifecycle.apply(TodoItemDescriptionUpdatedEvent(command.todoListUuid, command.uuid, command.description))
+    }
+
+    @EventSourcingHandler
+    fun on(event: TodoItemDescriptionUpdatedEvent) {
+        logger.info("TodoList (${event.todoListUuid}): TodoItem (${event.uuid}) Incoming event: TodoItem updated")
+    }
+
+    @CommandHandler
+    fun on(command: FinishTodoItemCommand) {
+        logger.info("TodoList (${command.todoListUuid}): TodoItem (${command.uuid}) Incoming command: Finish todoItem")
+        if (!getTodoItem(command.uuid).status.equals(TodoItemStatus.STARTED)) {
+            throw TodoItemAlreadyFinishedException()
+        }
+        AggregateLifecycle.apply(TodoItemFinishedEvent(command.todoListUuid, command.uuid))
+    }
+
+    @EventSourcingHandler
+    fun on(event: TodoItemFinishedEvent) {
+        logger.info("TodoList (${event.todoListUuid}): TodoItem (${event.uuid}) Incoming event: TodoItem finished")
+        getTodoItem(event.uuid).status = TodoItemStatus.FINISHED
+    }
+
+    @CommandHandler
+    fun on(command: StartTodoItemCommand) {
+        logger.info("TodoList (${command.todoListUuid}): TodoItem (${command.uuid}) Incoming command: Start todoItem")
+        if (!getTodoItem(command.uuid).status.equals(TodoItemStatus.FINISHED)) {
+            throw TodoItemAlreadyStartedException()
+        }
+        AggregateLifecycle.apply(TodoItemStartedEvent(command.todoListUuid, command.uuid))
+    }
+
+    @EventSourcingHandler
+    fun on(event: TodoItemStartedEvent) {
+        logger.info("TodoList (${event.todoListUuid}): TodoItem (${event.uuid}) Incoming event: TodoItem started")
+        getTodoItem(event.uuid).status = TodoItemStatus.STARTED
+    }
+
+
+    private fun getTodoItem(uuid: UUID): TodoItem {
+        return todoItems.getOrElse(uuid) { throw TodoItemNotFoundException(); }
     }
 
 }
