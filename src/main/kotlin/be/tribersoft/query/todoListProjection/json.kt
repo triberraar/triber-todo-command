@@ -1,4 +1,4 @@
-package be.tribersoft.query.rest
+package be.tribersoft.query.todoListProjection
 
 import be.tribersoft.api.TodoItemStatus
 
