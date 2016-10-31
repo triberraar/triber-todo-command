@@ -3,3 +3,7 @@ spring:
   cloud:
     config:
       enabled: false
+  data:
+    mongodb:
+      repositories:
+        enabled: false
