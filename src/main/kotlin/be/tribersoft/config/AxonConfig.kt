@@ -22,7 +22,7 @@ import java.io.IOException
 import java.net.UnknownHostException
 
 @Configuration
-@Profile("prod")
+@Profile("mongodb")
 open class AxonProductionConfig {
 
     @Value("\${axon.mongodb.host}")
