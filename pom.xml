@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>be.tribersoft</groupId>
-	<artifactId>triber-todo-es</artifactId>
+	<artifactId>triber-todo-command</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>triber-todo-es</name>
+	<name>triber-todo-command</name>
 	<description>Demo project to implement a simple todo with ES and CQRS supported by the axon framework</description>
 
 	<parent>
