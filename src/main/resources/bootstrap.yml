@@ -1,6 +1,6 @@
 spring:
   application:
-    name: triber-todo
+    name: triber-todo-command
   cloud:
     config:
       uri: http://localhost:8888
