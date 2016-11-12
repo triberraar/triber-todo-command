@@ -10,6 +10,9 @@ script:
 after_success:
 - chmod +x travis-docker.sh
 - ./travis-docker.sh
+cache:
+  directories:
+  - $HOME/.m2
 env:
   global:
   # docker stuff add by doing travis encrypt DOCKER_USER=<> --add and travis encrypt DOCKER_PASS=<> --add
